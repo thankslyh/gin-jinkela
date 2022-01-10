@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"jinkela/api"
 	"jinkela/db"
+	"jinkela/model"
 	et "jinkela/utils/email"
 	"log"
 	"net/http"
@@ -22,8 +23,8 @@ var userApi = api.User{
 func Register(ctx *gin.Context)  {
 	email := ctx.PostForm("email")
 	verifyCode := ctx.PostForm("verifyCode")
-	code := db.GetRedisDB().Get(email).Val()
-	if code != verifyCode || code == "" {
+	inpCode := db.GetRedisDB().Get(email).Val()
+	if inpCode != verifyCode || inpCode == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": "400",
 			"msg": "验证码错误！",
@@ -76,4 +77,12 @@ func SendVerifyCode(ctx *gin.Context)  {
 		"code": http.StatusOK,
 		"msg": "验证发已发送您的邮箱，如若没看到，请看垃圾邮箱",
 	})
+}
+
+func Login(ctx *gin.Context) {
+	var user model.User
+	email := ctx.PostForm("email")
+	password := ctx.PostForm("password")
+
+	db.GetMysqlDB().Table("users").Find(&user, )
 }

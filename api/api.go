@@ -31,3 +31,7 @@ func (user *User) Register(email, password string) (int, error)  {
 	}
 	return http.StatusOK, nil
 }
+
+func (user *User) Login(email, password string) (int, error) {
+
+}
