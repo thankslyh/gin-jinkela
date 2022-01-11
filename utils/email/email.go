@@ -21,7 +21,3 @@ func SendEmail(text, subject string, to []string) error {
 	log.Println("发送成功........")
 	return nil
 }
-
-func CheckEmail(email string) {
-
-}

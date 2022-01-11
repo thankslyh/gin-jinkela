@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
@@ -10,6 +11,8 @@ type CustomClaims struct {
 	Password string `json:"password"`
 	jwt.StandardClaims
 }
+
+var tokenKey = []byte("thankslyh-jinkela")
 
 func GenToken(email, password string, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration).Unix()
@@ -21,9 +24,19 @@ func GenToken(email, password string, expireDuration time.Duration) (string, err
 			Issuer: "thankslyh@gmail.com",
 		},
 	})
-	return token.SignedString([]byte("saksnoashcoao"))
+	return token.SignedString(tokenKey)
 }
 
-func VerifyToken(token string) {
-
+func VerifyToken(token string) (*jwt.Token, error) {
+	var tokenClaims CustomClaims
+	tokenC, err := jwt.ParseWithClaims(token, &tokenClaims, func(token *jwt.Token) (interface{}, error) {
+		return tokenKey, nil
+	})
+	if err != nil {
+		return nil, errors.New("token解析错误")
+	}
+	if tokenC.Valid {
+		return tokenC, nil
+	}
+	return tokenC, errors.New("token解析错误")
 }

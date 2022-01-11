@@ -7,10 +7,6 @@ import (
 
 var DB *gorm.DB
 
-func SetDB(db *gorm.DB)  {
-	DB = db
-}
-
 type Route struct {
 	IsGroup bool
 	Path string
@@ -25,4 +21,6 @@ func Run(r *gin.Engine) {
 	rootUser := root.Group("/user")
 	rootUser.POST("/register", Register)
 	rootUser.POST("/send-verify-code", SendVerifyCode)
+	rootUser.POST("/login", Login)
+	rootUser.GET("/info", Info)
 }

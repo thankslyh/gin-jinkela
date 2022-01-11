@@ -5,6 +5,7 @@ import (
 	"jinkela/api"
 	"jinkela/db"
 	"jinkela/model"
+	"jinkela/utils/auth"
 	et "jinkela/utils/email"
 	"log"
 	"net/http"
@@ -14,21 +15,23 @@ import (
 
 // LPYGPJXNBAUUJUFQ
 
-const EmailReg = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$"
+const EmailReg = `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`
 
 
 var userApi = api.User{
-	DB: DB,
+	DB: db.GetMysqlDB(),
 }
 func Register(ctx *gin.Context)  {
 	email := ctx.PostForm("email")
 	verifyCode := ctx.PostForm("verifyCode")
 	inpCode := db.GetRedisDB().Get(email).Val()
+	log.Println("验证码=========:string=", inpCode, email)
 	if inpCode != verifyCode || inpCode == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": "400",
 			"msg": "验证码错误！",
 		})
+		return
 	}
 	password := ctx.PostForm("password")
 	if emailBool, _ := regexp.MatchString(EmailReg, email); !emailBool {
@@ -46,7 +49,18 @@ func Register(ctx *gin.Context)  {
 		return
 	}
 	code, err := userApi.Register(email, password)
-	ctx.JSON(code, err)
+	if code != http.StatusOK {
+		ctx.JSON(code, gin.H{
+			"code": code,
+			"msg": err,
+		})
+		return
+	}
+	log.Println(code, err)
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"msg": "注册成功！",
+	})
 }
 
 func SendVerifyCode(ctx *gin.Context)  {
@@ -57,7 +71,7 @@ func SendVerifyCode(ctx *gin.Context)  {
 			"msg": "邮箱不能为空!",
 		})
 	}
-	if emailBool, _ := regexp.MatchString(EmailReg, email); !emailBool {
+	if matched, _ := regexp.MatchString(EmailReg, email); !matched {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": "400",
 			"msg": "邮箱格式不对!",
@@ -72,7 +86,7 @@ func SendVerifyCode(ctx *gin.Context)  {
 		})
 		return
 	}
-	db.GetRedisDB().Set(email, "6666", time.Millisecond * 60)
+	db.GetRedisDB().Set(email, "6666", time.Minute * 2)
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
 		"msg": "验证发已发送您的邮箱，如若没看到，请看垃圾邮箱",
@@ -83,6 +97,44 @@ func Login(ctx *gin.Context) {
 	var user model.User
 	email := ctx.PostForm("email")
 	password := ctx.PostForm("password")
+	if matched, _ := regexp.MatchString(EmailReg, email); !matched {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": "400",
+			"msg": "邮箱格式不对!",
+		})
+		return
+	}
+	db.GetMysqlDB().Table("users").Find(&user, "email = ?", email)
+	if user.Password != password {
+		ctx.JSON(400, gin.H{
+			"code": 400,
+			"msg": "密码错误！",
+		})
+		return
+	}
+	token, err := auth.GenToken(email, password, time.Hour * 2)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadRequest,
+			"msg": "生成token错误！",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"data": gin.H{
+			"token": token,
+		},
+	})
+}
 
-	db.GetMysqlDB().Table("users").Find(&user, )
+func Info(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+	if token == "" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"code": http.StatusUnauthorized,
+			"msg": "未登录",
+		})
+		return
+	}
 }
