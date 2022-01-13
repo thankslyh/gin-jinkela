@@ -11,8 +11,8 @@ type User struct {
 	Model
 	Email string `json:"email"`
 	Password string `json:"password"`
-	UserId                 int64 `:"user_id"`
-	Phone                  string `:"phone"`
-	NickName               string `:"nick_name"`
+	UserId                 int64 `json:"user_id"`
+	Phone                  string `json:"phone"`
+	NickName               string `json:"nick_name"`
 
 }

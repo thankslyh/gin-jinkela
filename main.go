@@ -11,7 +11,8 @@ func main()  {
 	r.GET("/ping", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "pong")
 	})
-
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 	router.Run(r)
 	r.Run(":4396")
 }

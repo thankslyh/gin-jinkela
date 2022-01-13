@@ -7,18 +7,16 @@ import (
 )
 
 type CustomClaims struct {
-	Email string `json:"email"`
-	Password string `json:"password"`
+	UserId int `json:"user_id"`
 	jwt.StandardClaims
 }
 
 var tokenKey = []byte("thankslyh-jinkela")
 
-func GenToken(email, password string, expireDuration time.Duration) (string, error) {
+func GenToken(userId int, expireDuration time.Duration) (string, error) {
 	expire := time.Now().Add(expireDuration).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, CustomClaims{
-		email,
-		password,
+		userId,
 		jwt.StandardClaims{
 			ExpiresAt: expire,
 			Issuer: "thankslyh@gmail.com",

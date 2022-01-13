@@ -43,9 +43,16 @@ func (user *User) Login(email, password string) (int, string, error) {
 	if ret.Password != password {
 		return http.StatusBadRequest, "", jerror.PasswordError
 	}
-	token, err := auth.GenToken(email, password, time.Hour * 2)
+	token, err := auth.GenToken(int(ret.UserId), time.Hour * 2)
 	if err != nil {
 		return http.StatusBadRequest, "", err
 	}
 	return http.StatusOK, token, nil
+}
+
+func (user *User) Info(userId int) (model.User, error)  {
+	var ret model.User
+	user.DB.Table("users").Find(&ret, "user_id = ?", userId)
+	log.Println(ret)
+	return ret, nil
 }

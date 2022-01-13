@@ -112,7 +112,7 @@ func Login(ctx *gin.Context) {
 		})
 		return
 	}
-	token, err := auth.GenToken(email, password, time.Hour * 2)
+	token, err := auth.GenToken(int(user.UserId), time.Hour * 2)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": http.StatusBadRequest,
@@ -129,12 +129,27 @@ func Login(ctx *gin.Context) {
 }
 
 func Info(ctx *gin.Context) {
-	token := ctx.GetHeader("Authorization")
-	if token == "" {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"code": http.StatusUnauthorized,
-			"msg": "未登录",
+	userIdInter := ctx.MustGet("userId")
+	userIdInt, _ := userIdInter.(int)
+	userInfo, err := userApi.Info(userIdInt)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadRequest,
+			"msg": "查询出错！",
 		})
 		return
 	}
+	//userInfoByte, err := json.Marshal(userInfo);
+	//if  err != nil {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		"code": http.StatusBadRequest,
+	//		"msg": "解析出错！",
+	//	})
+	//	return
+	//}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
+		"msg": "请求成功",
+		"data": userInfo,
+	})
 }
