@@ -32,9 +32,9 @@ func AuthRequired(whiteList []string) gin.HandlerFunc  {
 			}
 			if claims, ok := t.Claims.(*auth.CustomClaims); ok && t.Valid {
 				strUserId := strconv.FormatInt(int64(claims.UserId), 10)
-				log.Println("strUserId", strUserId)
 				ctx.Set("userId", strUserId)
 			}
+			return
 		}
 	}
 }

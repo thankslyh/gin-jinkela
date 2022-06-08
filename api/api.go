@@ -14,6 +14,7 @@ type User struct {
 	DB *gorm.DB
 }
 
+
 // Register 注册api
 func (user *User) Register(email, password string) (int, error)  {
 	var ret model.User

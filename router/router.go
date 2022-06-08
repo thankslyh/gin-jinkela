@@ -26,9 +26,12 @@ var whitelist = []string{
 func Run(r *gin.Engine) {
 	root := r.Group("/api")
 	root.Use(auth.AuthRequired(whitelist))
-	rootUser := root.Group("/user")
-	rootUser.POST("/register", Register)
-	rootUser.POST("/send-verify-code", SendVerifyCode)
-	rootUser.POST("/login", Login)
-	rootUser.GET("/info", Info)
+	rootUser := root.Group(UserRoute.Base)
+	rootUser.POST("/register", UserRoute.Register)
+	rootUser.POST("/send-verify-code", UserRoute.SendVerifyCode)
+	rootUser.POST("/login", UserRoute.Login)
+	rootUser.GET("/info", UserRoute.Info)
+
+	rootTag := root.Group(TagRoute.Base)
+	rootTag.POST("/add", TagRoute.Add)
 }

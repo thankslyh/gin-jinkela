@@ -17,11 +17,24 @@ import (
 
 const EmailReg = `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`
 
+type User struct {
+	Register, SendVerifyCode, Login, Info gin.HandlerFunc
+	Base string
+}
 
 var userApi = api.User{
 	DB: db.GetMysqlDB(),
 }
-func Register(ctx *gin.Context)  {
+
+var UserRoute = User {
+	Register: register,
+	SendVerifyCode: sendVerifyCode,
+	Login: login,
+	Info: info,
+	Base: "/user",
+}
+
+func register(ctx *gin.Context)  {
 	email := ctx.PostForm("email")
 	verifyCode := ctx.PostForm("verifyCode")
 	inpCode := db.GetRedisDB().Get(email).Val()
@@ -43,7 +56,7 @@ func Register(ctx *gin.Context)  {
 	}
 	if len(password) < 8 || len(password) > 20 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": "400",
+			"code": http.StatusBadRequest,
 			"msg": "密码格式不对!",
 		})
 		return
@@ -63,7 +76,7 @@ func Register(ctx *gin.Context)  {
 	})
 }
 
-func SendVerifyCode(ctx *gin.Context)  {
+func sendVerifyCode(ctx *gin.Context)  {
 	email := ctx.PostForm("email")
 	if email == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -93,7 +106,7 @@ func SendVerifyCode(ctx *gin.Context)  {
 	})
 }
 
-func Login(ctx *gin.Context) {
+func login(ctx *gin.Context) {
 	var user model.User
 	email := ctx.PostForm("email")
 	password := ctx.PostForm("password")
@@ -128,7 +141,7 @@ func Login(ctx *gin.Context) {
 	})
 }
 
-func Info(ctx *gin.Context) {
+func info(ctx *gin.Context) {
 	userIdInter := ctx.MustGet("userId")
 	userIdInt, _ := userIdInter.(int)
 	userInfo, err := userApi.Info(userIdInt)

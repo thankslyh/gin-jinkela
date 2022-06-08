@@ -12,3 +12,10 @@ func TestUser_Register(t *testing.T) {
 	}
 	apiUser.Register("826567584@qq.com", "Li!21577")
 }
+
+func TestTag_Add(t *testing.T) {
+	apiTag := api.Tag{
+		DB: db.GetMysqlDB(),
+	}
+	apiTag.Add("nodejs", "NodeJs")
+}
