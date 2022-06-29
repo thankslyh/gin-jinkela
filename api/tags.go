@@ -30,6 +30,12 @@ func (tag *Tag) Add(code, name string) (int, error)  {
 	return http.StatusOK, nil
 }
 
-func (tag *Tag) update(id int64, code, name string) {
-
+// GetAll 查询所有标签
+func (tag *Tag) GetAll() ([]model.Tag, int, error)  {
+	var ret []model.Tag
+	err := tag.DB.Table("tags").Where("is_disable = ?", 0).Find(&ret).Error
+	if err != nil {
+		return ret, http.StatusBadRequest, err
+	}
+	return ret, http.StatusOK, nil
 }

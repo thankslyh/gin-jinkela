@@ -92,11 +92,11 @@ func sendVerifyCode(ctx *gin.Context)  {
 		return
 	}
 	if err := et.SendEmail("您正在注册xxxxx服务，验证码为：6666", "注册", []string{email}); err != nil {
-		log.Fatal("邮件发送失败，失败原因：" + err.Error())
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": http.StatusBadRequest,
 			"msg": err.Error(),
 		})
+		log.Fatal("邮件发送失败，失败原因：" + err.Error())
 		return
 	}
 	db.GetRedisDB().Set(email, "6666", time.Minute * 2)

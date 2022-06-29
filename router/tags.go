@@ -8,7 +8,7 @@ import (
 )
 
 type Tags struct {
-	Add, Update, Delete, Info gin.HandlerFunc
+	Add, GetTags, Update, Delete, Info gin.HandlerFunc
 	Base string
 }
 
@@ -18,6 +18,7 @@ var tagApi  = api.Tag {
 
 var TagRoute = Tags{
 	Add: add,
+	GetTags: getTags,
 	Base: "/tags",
 }
 
@@ -38,4 +39,22 @@ func add(c *gin.Context)  {
 		"msg": "成功",
 		"data": "",
 	})
+}
+
+func getTags(c *gin.Context)  {
+	data, code, err := tagApi.GetAll()
+	if code != http.StatusOK {
+		c.JSON(code, gin.H{
+			"code": code,
+			"msg": err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	c.JSON(code, gin.H{
+		"code": code,
+		"msg": "success",
+		"data": data,
+	})
+
 }

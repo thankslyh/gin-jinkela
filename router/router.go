@@ -21,6 +21,9 @@ var whitelist = []string{
 	"/api/user/login",
 	"/api/user/register",
 	"/api/user/send-verify-code",
+	"/api/tags/get",
+	"/api/post/list",
+	"/api/post/get",
 }
 
 func Run(r *gin.Engine) {
@@ -34,4 +37,9 @@ func Run(r *gin.Engine) {
 
 	rootTag := root.Group(TagRoute.Base)
 	rootTag.POST("/add", TagRoute.Add)
+	rootTag.GET("/get", TagRoute.GetTags)
+
+	rootPost := root.Group(PostRoute.Base)
+	rootPost.GET("/list", PostRoute.GetList)
+	rootPost.GET("/get", PostRoute.GetPostById)
 }
