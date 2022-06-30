@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"jinkela/api"
-	"jinkela/db"
 	"net/http"
 )
 
@@ -12,10 +11,12 @@ type Tags struct {
 	Base string
 }
 
-var tagApi  = api.Tag {
-	DB: db.GetMysqlDB(),
-}
+var tagApi api.Tag
 
+func getTagApi() *api.Tag {
+	tagApi.DB = getDB()
+	return &tagApi
+}
 var TagRoute = Tags{
 	Add: add,
 	GetTags: getTags,
@@ -25,7 +26,7 @@ var TagRoute = Tags{
 func add(c *gin.Context)  {
 	tagCode := c.PostForm("code")
 	tagName := c.PostForm("name")
-	code, err := tagApi.Add(tagCode, tagName)
+	code, err := getTagApi().Add(tagCode, tagName)
 	if code != http.StatusOK {
 		c.JSON(code, gin.H{
 			"code": code,
@@ -42,7 +43,7 @@ func add(c *gin.Context)  {
 }
 
 func getTags(c *gin.Context)  {
-	data, code, err := tagApi.GetAll()
+	data, code, err := getTagApi().GetAll()
 	if code != http.StatusOK {
 		c.JSON(code, gin.H{
 			"code": code,

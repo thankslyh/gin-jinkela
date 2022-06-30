@@ -3,11 +3,21 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"jinkela/db"
 	"jinkela/middlewares/auth"
+	"sync"
 )
 
 var DB *gorm.DB
 
+var once sync.Once
+
+func getDB() *gorm.DB {
+	once.Do(func() {
+		DB = db.GetMysqlDB()
+	})
+	return DB
+}
 type Route struct {
 	IsGroup bool
 	Path string
@@ -22,6 +32,7 @@ var whitelist = []string{
 	"/api/user/register",
 	"/api/user/send-verify-code",
 	"/api/tags/get",
+	"/api/tags/add",
 	"/api/post/list",
 	"/api/post/get",
 }

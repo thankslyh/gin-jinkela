@@ -3,7 +3,6 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"jinkela/api"
-	"jinkela/db"
 	"net/http"
 	"strconv"
 )
@@ -13,8 +12,11 @@ type Post struct {
 	Base string
 }
 
-var postApi = api.Post{
-	DB: db.GetMysqlDB(),
+var postApi api.Post
+
+func getPostApi() *api.Post {
+	postApi.DB = getDB()
+	return &postApi
 }
 
 var PostRoute = Post{
@@ -24,7 +26,7 @@ var PostRoute = Post{
 }
 
 func getList(ctx *gin.Context)  {
-	data, code, err := postApi.GetList()
+	data, code, err := getPostApi().GetList()
 	if code != http.StatusOK {
 		ctx.JSON(code, gin.H{
 			"code": code,
@@ -51,7 +53,7 @@ func getPostById(ctx *gin.Context) {
 		})
 		return
 	}
-	data, code, err := postApi.GetPostById(iniId)
+	data, code, err := getPostApi().GetPostById(iniId)
 	if err != nil {
 		ctx.JSON(code, gin.H{
 			"code": code,

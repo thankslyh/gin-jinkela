@@ -1,17 +1,19 @@
 package db
 
 import (
+	"fmt"
 	"github.com/go-redis/redis"
+	"jinkela/setting"
 	"log"
 	"time"
 )
 
 var redisDB *redis.Client
 
-func init() {
-	log.Println("init redis")
+func SetRedisUp() {
+	fmt.Println("init redis=", setting.RedisSetting.Host)
 	redisDB = redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: setting.RedisSetting.Host,
 		Password: "",
 		DB: 0,
 	})

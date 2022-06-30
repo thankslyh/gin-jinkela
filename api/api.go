@@ -31,7 +31,7 @@ func (user *User) Register(email, password string) (int, error)  {
 		return http.StatusBadRequest, jerror.EmailAlreadyExsit
 	}
 	ret.Email, ret.Password = email, password
-	ret.CreateTime, ret.UpdateTime = time.Now(), time.Now()
+	ret.CreateAt, ret.UpdateAt = time.Now(), time.Now()
 	if err := user.DB.Table("users").Create(&ret).Error; err != nil {
 		return http.StatusOK, err
 	}

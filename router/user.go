@@ -22,8 +22,11 @@ type User struct {
 	Base string
 }
 
-var userApi = api.User{
-	DB: db.GetMysqlDB(),
+var userApi api.User
+
+func getUserApi() *api.User {
+	userApi.DB = getDB()
+	return &userApi
 }
 
 var UserRoute = User {
@@ -61,7 +64,7 @@ func register(ctx *gin.Context)  {
 		})
 		return
 	}
-	code, err := userApi.Register(email, password)
+	code, err := getUserApi().Register(email, password)
 	if code != http.StatusOK {
 		ctx.JSON(code, gin.H{
 			"code": code,
@@ -144,7 +147,7 @@ func login(ctx *gin.Context) {
 func info(ctx *gin.Context) {
 	userIdInter := ctx.MustGet("userId")
 	userIdInt, _ := userIdInter.(int)
-	userInfo, err := userApi.Info(userIdInt)
+	userInfo, err := getUserApi().Info(userIdInt)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"code": http.StatusBadRequest,

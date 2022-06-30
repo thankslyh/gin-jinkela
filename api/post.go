@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"jinkela/model"
 	"net/http"
@@ -19,8 +20,9 @@ func (p *Post) GetList() ([]model.SimplePost, int, error) {
 	return ret, http.StatusOK, nil
 }
 
-func (p Post) GetPostById(id int) (model.Post, int, error)  {
+func (p *Post) GetPostById(id int) (model.Post, int, error)  {
 	var ret model.Post
+	fmt.Println(p.DB)
 	err := p.DB.Table("post").Find(&ret, "id = ?", id).Error
 	if err != nil {
 		return ret, http.StatusBadRequest, err

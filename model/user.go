@@ -4,8 +4,8 @@ import "time"
 
 type Model struct {
 	ID                     int64   `gorm:"primaryKey" json:"id" :"id"`
-	CreateTime time.Time `json:"create_time"`
-	UpdateTime time.Time `json:"update_time"`
+	CreateAt time.Time `json:"create_at"`
+	UpdateAt time.Time `json:"update_at"`
 }
 
 type User struct {

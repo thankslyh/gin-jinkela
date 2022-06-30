@@ -23,7 +23,7 @@ func (tag *Tag) Add(code, name string) (int, error)  {
 		return http.StatusBadRequest, jerror.TagExist
 	}
 	ret.Code, ret.Name = code, name
-	ret.CreateTime, ret.UpdateTime = time.Now(), time.Now()
+	ret.CreateAt, ret.UpdateAt = time.Now(), time.Now()
 	if err := tag.DB.Table("tags").Create(&ret).Error; err != nil {
 		return http.StatusBadRequest, err
 	}

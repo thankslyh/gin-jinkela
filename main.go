@@ -2,9 +2,17 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"jinkela/db"
 	"jinkela/router"
+	"jinkela/setting"
 	"net/http"
 )
+
+func init() {
+	setting.Setup()
+	db.SetMysqlUp()
+	//db.SetRedisUp()
+}
 
 func main()  {
 	r := gin.Default()
