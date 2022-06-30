@@ -20,7 +20,7 @@ func getPostApi() *api.Post {
 }
 
 var PostRoute = Post{
-	GetList: getList,
+	GetList: getPostList,
 	GetPostById: getPostById,
 	Base: "/post",
 }
@@ -64,6 +64,24 @@ func getPostById(ctx *gin.Context) {
 	}
 	ctx.JSON(code, gin.H{
 		"code": code,
+		"msg": "success",
+		"data": data,
+	})
+}
+
+func getPostList(ctx *gin.Context)  {
+	tagCode := ctx.Query("tagCode")
+	data, err := getPostApi().GetPostList(tagCode)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": http.StatusBadRequest,
+			"msg": err.Error(),
+			"data": nil,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": http.StatusOK,
 		"msg": "success",
 		"data": data,
 	})

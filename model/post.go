@@ -12,3 +12,7 @@ type Post struct {
 	SimplePost
 	Content string `json:"content"`
 }
+
+type TagCode struct {
+	TagCode string `json:"tag_code"`
+}

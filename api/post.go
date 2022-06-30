@@ -29,3 +29,23 @@ func (p *Post) GetPostById(id int) (model.Post, int, error)  {
 	}
 	return ret, http.StatusOK, nil
 }
+
+type postId struct {
+	PostId int
+}
+func (p *Post) GetPostList(tagCode string) ([]model.SimplePost, error)  {
+	var ret []model.SimplePost
+	var postIds []postId
+	var err error
+	if tagCode == "" {
+		err = p.DB.Table("post").Find(&ret).Error
+	} else {
+		err = p.DB.Table("post_tag").Where("tag_code = ?", tagCode).Find(&postIds).Error
+		var ids []int
+		for _, val := range postIds {
+			ids = append(ids, val.PostId)
+		}
+		err = p.DB.Table("post").Find(&ret, ids).Error
+	}
+	return ret, err
+}
