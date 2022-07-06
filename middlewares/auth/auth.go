@@ -28,6 +28,7 @@ func AuthRequired(whiteList []string) gin.HandlerFunc  {
 					"code": http.StatusUnauthorized,
 					"msg": "token 失效",
 				})
+				ctx.Abort()
 				return
 			}
 			if claims, ok := t.Claims.(*auth.CustomClaims); ok && t.Valid {
